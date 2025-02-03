@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Internet Speed Test</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="card">
+            <h2>Internet Speed Test</h2>
+            <div class="info">
+                <p>Ping: <span id="ping">--</span> ms</p>
+                <p>Jitter: <span id="jitter">--</span> ms</p>
+                <p>Download: <span id="download">--</span> Mbps</p>
+                <p>Upload: <span id="upload">--</span> Mbps</p>
+            </div>
+            <div class="gauge">
+                <div class="needle"></div>
+                <div class="speed-text">0 Mbps</div>
+            </div>
+            <div class="loader"></div>
+            <button id="start-test">Start Test</button>
+            <div class="history">
+                <h3>History</h3>
+                <ul id="test-history">
+                    <!-- Test history will be added here -->
+                </ul>
+            </div>
+        </div>
+        <div class="loader-widget">
+          <h1>Internet Speed Test</h1>
+          <div class="loader-content">
+            <div class="loader"></div>
+            <button id="startBtn">Start Test</button>
+          </div>
+        </div>
+        <div class="loader-widget hide result">
+          <h1>Result</h1>
+          <div class="loader-content result">
+            <div class="content">
+              <span id="download-speed"></span>
+              <small>Mbps</small>
+            </div>
+            <div class="content">
+              <span id="upload-speed"></span>
+              <small>Mbps</small>
+            </div>
+            <button id="restartBtn">Test Again</button>
+          </div>
+          <div class="ping hide">Ping: <span id="ping-value"></span></div>
+        </div>
+      
+      </div>
+    
+    </body>
+</html>
