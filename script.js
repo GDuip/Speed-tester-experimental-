@@ -654,3 +654,13 @@ window.onload = () =>
 	initCharts(); // Initialize charts on page load
 	infoDisplay.textContent = "Ready to test. Set number of tests and click 'Start Test'.";
 };
+
+// Ensure the event listener references the correct button
+document.getElementById('startTestBtn').addEventListener('click', () => {
+    numTests = parseInt(numTestsInput.value, 10);
+    if (isNaN(numTests) || numTests < 1 || numTests > 20) {
+        alert("Please enter a valid number of tests between 1 and 20.");
+        return;
+    }
+    init();
+});
